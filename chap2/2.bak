@@ -1,0 +1,9 @@
+#lang racket
+
+(define (maps proc items)
+    (if (null? items)
+        null
+        (cons (proc (car items)) (map proc (cdr items)) )
+    )
+)
+(maps (lambda (x) (* x x)) (cons 1 2))
