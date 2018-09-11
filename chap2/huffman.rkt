@@ -120,17 +120,55 @@
         )
     )
 )
+(define (encode chars tree)
+    (define (getPairs tree)
+        (define (onepath path branch)
+            (if (leaf? branch) 
+                (list (symbol-leaf branch) path)
+                (append (onepath (append path '(0)) (left-branch branch))
+                (onepath (append path '(1)) (right-branch branch)))
+                )
+        )
+        (onepath '() tree)
+    )
+    (define (encode-in chars pairs)
+        (define (findEncode c pairs)
+            (if (null? pairs) (error "fuck c"  c)
+                (if (eq? (car pairs) c) 
+                    (cadr pairs)
+                    (findEncode c (cddr pairs)) 
+                ))
+        )
+        (if (null? chars)
+            null
+            (append  (findEncode (car chars) pairs) (encode-in (cdr chars) pairs)) )
+        ; (findEncode 'B (list 'A (list 0) 'B (list 1 0)))
+    )
+    (let ((pairs (getPairs tree)))
+        ; (display pairs)
+        ; (display (car chars))
+        ; (display (car pairs))
+        ; (if (eq? (car pairs) 'A)  (display "tree") (display "fuck"))
+        (encode-in chars pairs)
+        ; (encode-in (list 'A 'B) (list 'A (list 0) 'B (list 1 0)))
+
+    )
+        
+)
+
 ; (display (decode smaple-message sample-tree))
 ; (adjoin-set (make-leaf 'b 3) (adjoin-set (make-leaf 'A 4) '()))  ; symbol
 ; (make-leaf-set (list (list 'A 4) (list 'C 1) (list 'D 1) (list 'B 2) ))
                                     ; (cadr pair) 
-(define zd (generate-huffman-tree (list (list 'A 8) (list 'B 5) (list 'D 4) (list 'C 3) )))
-zd
+(define huff (generate-huffman-tree (list (list 'A 8) (list 'B 5) (list 'D 4) (list 'C 3) )))
+huff
 sample-tree
+; (getPairs zd)
+(define message (encode (list 'A 'C 'A 'B 'B 'D 'A) huff))
+(decode message huff)
 
-
-(decode smaple-message sample-tree)
-(decode smaple-message zd)
+; (decode smaple-message sample-tree)
+; (decode smaple-message zd)
 ; sample-tree
 ; (make-code-tree (make-leaf 'B 2)
 ; (make-code-tree (make-leaf 'D 1)
