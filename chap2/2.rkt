@@ -86,3 +86,20 @@
     )
 )
 ; (permutations (range 1 1))
+(define (square x)
+    (* x x)
+)
+(define (prime? a)
+    (define (p div a)
+        (if (> (square div ) a)
+            a
+            (if (= (remainder  a div) 0)
+                div
+                (p (+ 1 div) a))
+        )
+    )
+    (= (p 2 a) a)
+)
+(time (car (cdr (filter prime? (range 100 1000000)))))
+; cpu time: 7391 real time: 7386 gc time: 2237
+; 103
