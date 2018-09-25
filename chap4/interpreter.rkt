@@ -1,10 +1,17 @@
 #lang racket
+(require rnrs/mutable-pairs-6)
+(define set-car! set-mcar!)
+(define set-cdr! set-mcdr!)
 (define apply-primitive-procedure apply)
 (define (true? x)
-    (not (eq? x false))
+    (not (eq? x #f))
 )
+; (define true #t)
+; (define false #f)
+; (define null '())
+; (define error . args)
 (define (false? x)
-    (eq? x false)
+    (eq? x #t)
 )
 
 
@@ -62,6 +69,7 @@
     (cdr exp)
 )
 (define (variable? exp) (symbol? exp))
+(define (definition? exp) (tagged-list? exp 'define))
 
 (define (quoted? exp) (tagged-list? exp 'quote))
 
@@ -89,8 +97,8 @@
     (define (env-lookup env)
         (define (scan-up vars vals)
             (begin
-            ; (display vars)
-            ; (display vals)
+            (display vars)
+            (display vals)
             (if (null? vars)
                 (env-lookup (enclosing-environment env))
                 (if (eq? exp  (car vars))
@@ -104,22 +112,24 @@
                 (scan-up (frame-variables frame) (frame-values frame))
             )
         )
-        )
+    )
+    ; (display env)
+    (display "fuck")
+
+    (display exp)
+    (display "fuck")
     (env-lookup env)
 )
 (define (primitive-environment)
-    (list (list '+ +)
-    (list '- -)
-    (list '* *)
+    (list 
+        (list '* *)
+        (list '+ +)
+        (list '- -)
+   
     (list 'remainder remainder)
     
     ))
-(define (map proc items)
-    (if (null? items)
-        '()
-        (cons (proc (car items)) (map proc (cdr items)) )
-    )
-)
+
 (define (init)
     (let ((env (primitive-environment)))
         (let(
@@ -128,24 +138,47 @@
         )
     (extend-environment vars vals null)))
 )
+(define (map proc items)
+    (if (null? items)
+        '()
+        (cons (proc (car items)) (map proc (cdr items)) )
+    )
+)
     ; 'primitive
 (define (primitive-procudure? exp)
     (eq? (car exp) 'primitive))
 (define (extend-environment vars vals base-env)
     (cons (make-frame vars vals) base-env)
 )
-
+(define (add-binding-to-frame var val frame)
+    (set-car! frame (cons var (frame-variables frame)))
+    (set-cdr! frame (cons val (frame-values frame)))
+)
+(define (add-define! var val frame)
+    (define (scan-frame vars vals)
+        (if (null? vars)
+            (add-binding-to-frame var val frame)
+            (if (eq? (car vars) var)
+                (set-car! vals val)
+                (scan-frame (cdr vars) (cdr vals))
+            )   
+        )
+    )
+    (scan-frame (frame-values frame) (frame-variables frame))
+)
 (define (apply_ procedure paraments)
     (cond ((primitive-procudure? procedure) (apply-primitive-procedure (cadr procedure) paraments))
         (else error "not procedure" procedure paraments)))
-
+(define (eval-definition exp env)
+    (add-define! (cadr exp) (eval (caddr exp) env) (first-frame env))
+)
 
 (define (eval exp env)
     (cond ((self-evaluting? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ; ((quoted? exp) (text-of-quotation exp))
         ; ((assignment? exp) (eval-assignment exp env))
-        ; ((definition? exp) (eval-definition exp env))
+        ((definition? exp) (eval-definition exp env))
         ; ((if? exp) (eval-if exp env))
         ; ((lambda? exp) (make-procedure (lambda-paraments exp) 
         ;                               (lambda-body exp)
@@ -176,5 +209,16 @@
 ; 1
 ; 2
 ; "fasdf"
+;(+ 1 2)
+;(* 1 2 3)
 
 ; test todo
+; (define a 3)
+; (+ a 3)
+
+
+; debug
+; (init))
+; (init)
+; (display newline)
+; (lookup-variable-value (car (read))
