@@ -26,3 +26,4 @@ public:
 		env[var] = val;
 	}
 };
+Env initEnv();

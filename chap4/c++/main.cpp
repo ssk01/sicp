@@ -6,6 +6,8 @@
 #include <assert.h>
 #include "scheme.h"
 #include "env.h"
+#include "parser.h"
+#include "eval.h"
 using namespace std;
 
 // 1
@@ -23,165 +25,29 @@ using namespace std;
 //	return false;
 //}
 
+//
+//(cond((self - evaluating ? exp) exp)
+//((variable ? exp) (lookup - variable - value exp env))
+//((quoted ? exp) (text - of - quotation exp))
+//((assignment ? exp) (eval - assignment exp env))
+//((definition ? exp) (eval - definition exp env))
+//((if ? exp) (eval - if exp env))
+//((lambda ? exp)
+//(make - procedure(lambda - parameters exp)
+//(lambda - body exp)
+//env))
+//((begin ? exp)
+//(eval - sequence(begin - actions exp) env))
+//((cond ? exp) (eval(cond->if exp) env))
+//((application ? exp)
+//(apply(eval(operator exp) env)
+//(list - of - values(operands exp) env)))
+//(else
+//(error "Unknown expression type -- EVAL" exp))))
 
 
 
 
-
-enum class Type {
-	Symbol,
-	List,
-	Int,
-	Str,
-};
-class Parser {
-public:
-	Parser(string& input):input(input) {
-	}
-	shared_ptr<SchemeValue> getInt(int &i) {
-		auto beg = i;
-		while (input.size()> i && isdigit(input[i])) {
-			i++;
-		}
-		return make_shared<IntValue>(input.substr(beg, i- beg));
-	}
-	shared_ptr<SchemeValue> getList(int &i) {
-		assert(input[i] == '(');
-		i++;
-		//auto 
-		//auto list = new ListValue();
-		auto list = make_shared<ListValue>();
-		//auto list = new ListValue();
-		while (input[i] != ')') {
-			auto type = peek(i);
-			if (type == Type::Int) {
-				list->addValue(getInt(i));
-			}
-			else if (type == Type::Str) {
-				list->addValue(getStr(i));
-
-				 //getStr(i);
-			}
-			else if (type == Type::Symbol) {
-				list->addValue(getSymbol(i));
-
-				//return getSymbol(i);
-			}
-			else if (type == Type::List) {
-				list->addValue(getList(i));
-
-				//return (i);
-			}
-		}
-		//return  (shared_ptr<SchemeValue>)(SchemeValue*)list;
-		return list;
-	}
-	shared_ptr<SchemeValue> getStr(int &i) {
-		assert(input[i] == '"');
-		auto beg = i;
-		i++;
-		while (input.size()> i && input[i] != '"') {
-			i++;
-		}
-		return make_shared<StringValue>(input.substr(beg, i - beg+1));
-	}
-	shared_ptr<SchemeValue> getSymbol(int &i) {
-		//assert(input[i] == ';');
-		auto beg = i;
-		//i++;
-		while (input.size()> i && (!isspace(input[i]))) {
-			i++;
-		}
-		return make_shared<SymbolValue>(input.substr(beg, i - beg));
-	}
-	shared_ptr<SchemeValue> parser() {
-		int i = 0;
-		auto type = peek(i);
-		if (type == Type::Int) {
-			return getInt(i);
-		}
-		else if (type == Type::Str) {
-			return getStr(i);
-		}
-		else if (type == Type::Symbol) {
-			return getSymbol(i);
-		}
-		else if (type == Type::List) {
-			return getList(i);
-		}
-	}
-	Type peek(int &idx) {
-		auto i = idx;
-		while (input.size()> i && isspace(input[i])) {
-			i++;
-		}
-		if (i == input.size()) {
-			cout << "error " << input << endl;
-			exit(1);
-		}
-		idx = i;
-		if (isdigit(input[i])) {
-			return Type::Int;
-		}
-		else if (input[i] == '(') {
-			return Type::List;
-		}
-		else if (input[i] == '"') {
-			return Type::Str;
-		}
-		/*else if (input[i] == ')') {
-			return Type::listEN
-		}*/
-		return Type::Symbol;
-
-		/*
-		auto j = i;
-		while (input.size()> i && isspace(input[i])) {
-		i++;
-		}*/
-	}
-	string input;
-};
-//pair<Type, string> peek(const string& input) {
-//	auto i = 0;
-//	while (input.size()> i && isspace(input[i])) {
-//		i++;
-//	}
-//	if (i == input.size()) {
-//		cout << "error " << input << endl;
-//		exit(1);
-//	}
-//	auto j = i;
-//	while (input.size()> i && isspace(input[i])) {
-//		i++;
-//	}
-//	string result = input.substr(j, i - j);
-//	if (isdigit[0]) {
-//		return 
-//	}
-//}
-shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, Env& env) {
-	//return {};
-	if (exp->selfEvaluting()) {
-		//cout << *exp << endl;
-		return exp;
-	}
-	else 
-	if (exp->isVariable()) {
-		auto result =  env.lookup(exp);
-		//cout << *result;
-		return result;
-	}
-	else if (exp->isDefinition()) {
-		//auto a = 1;
-		env.define(exp->var(), eval(exp->val(), env));
-		return make_shared< VoidValue>();
-	}
-		//return {};
-	return make_shared< VoidValue>();
-
-
-}
 void testParser(string& input) {
 	Parser a{ input };
 
@@ -193,7 +59,10 @@ void testEval(string& input, Env& init) {
 	cout << "result " <<*eval(b, init) << endl;;
 
 }
+// todo support for - int;
+
 void runloop() {
+	auto init = initEnv();
 	string input = R"("a b c")";
 
 	string input1 = R"(132)";
@@ -202,9 +71,11 @@ void runloop() {
 	string list1 = R"( (+ 1 (f 2))";
 	string define = R"((define a 411))";
 	string look = R"(a)";
-	auto init = Env();
-	testEval(define, init);
-	testEval(look, init);
+	string if_ = R"((if 0 3 4))";
+	string plus = R"((+ 1 123))";
+	//testEval(define, init);
+	//testEval(look, init);
+	testEval(plus, init);
 
 	//testParser(input);
 	//testParser(input1);
