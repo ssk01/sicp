@@ -70,6 +70,8 @@ void runloop() {
 	string list = R"( (1 2 3))";
 	string list1 = R"( (+ 1 (f 2))";
 	string define = R"((define a 411))";
+
+	string defineLambda = R"((define (f a) (+ a 1)))";
 	string look = R"(a)";
 	string if_ = R"((if 0 3 4))";
 	string plus = R"((+ 1 123))";

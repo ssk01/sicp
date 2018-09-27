@@ -8,3 +8,10 @@ ostream& operator<<(ostream& out, const SchemeValue& a) {
 	a.print(out);
 	return out;
 }
+vector<string> listToString(const vecotr<shared_ptr<SchemeValue>> &lists) {
+	vector<string> result;
+	for (auto &v : lists){
+		result.emplace_back(v->toString());
+	}
+	return result;
+}

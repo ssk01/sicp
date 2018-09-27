@@ -9,14 +9,19 @@ class Env{
 public:
 	//enclosingEnvironment
 	Env() = default;
+	Env(shared_ptr<Env> parent_):parent(parent){}
 	shared_ptr<Env> parent;
 	map<string, shared_ptr<SchemeValue>> env;
 
 	shared_ptr<SchemeValue> lookup(shared_ptr<SchemeValue> var_) {
 		//return {};
+		if ()
 		auto var = var_->toString();
 		if (env.find(var) == env.end()) {
-			std::cout << "not find 404";
+			if (parent.get() != nullptr){
+				return parent->lookup(var_);
+			}
+			std::cout << "not find 404" << var_->toString();
 			exit(1);
 		}
 		return env[var];
@@ -26,4 +31,6 @@ public:
 		env[var] = val;
 	}
 };
-Env initEnv();
+EnvPtr initEnv();
+using EnvPtr = shared_ptr<Env>;
+//是否要看见实现才能使用 shared_ptr

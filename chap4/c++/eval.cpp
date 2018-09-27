@@ -3,10 +3,14 @@ using namespace std;
 
 shared_ptr<SchemeValue> apply(shared_ptr<SchemeValue> procedure, vector<shared_ptr<SchemeValue>> arguments) {
 	if (procedure->isProcedure()) {
-		if (procedure->isPrimitive()) {
+		if (procedure->isPrimitiveProcedure()) {
 			return procedure->call(arguments);
+		}	else if (procedure->isLambda()){
+			auto env = procedure->newEnv(arguments);
+			return eval(procedure->body(), env);
 		}
-	}
+	} 
+	fck("apply fuck");
 }
 
 vector<shared_ptr<SchemeValue>>  listOfValue(vector<shared_ptr<SchemeValue>> arguments, Env& env) {
@@ -16,21 +20,21 @@ vector<shared_ptr<SchemeValue>>  listOfValue(vector<shared_ptr<SchemeValue>> arg
 	}
 	return result;
 }
-shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, Env& env) {
+shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	//return {};
 	if (exp->selfEvaluting()) {
 		//cout << *exp << endl;
 		return exp;
 	}
 	else if (exp->isVariable()) {
-		auto result = env.lookup(exp);
+		auto result = env->lookup(exp);
 		//cout << *result;
 		return result;
 	}
 	else if (exp->isDefinition()) {
 		//auto a = 1;
-		env.define(exp->var(), eval(exp->val(), env));
-		return make_shared< VoidValue>();
+		env->define(exp->var(), eval(exp->val(), env));
+		return make_shared<VoidValue>();
 	}
 	else if (exp->isIf()) {
 		auto predict = eval(exp->predict(), env);
