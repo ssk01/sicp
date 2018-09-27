@@ -53,13 +53,15 @@ void testParser(string& input) {
 
 	cout << *(a.parser()) << endl;
 }
-void testEval(string& input, Env& init) {
+void testEval(string& input, EnvPtr init) {
 	Parser a{ input };
 	auto b = a.parser();
+	cout << *(b) << endl;
+	cout << "parser success" << endl;
 	cout << "result " <<*eval(b, init) << endl;;
 
 }
-// todo support for - int;
+ //todo support for - int;
 
 void runloop() {
 	auto init = initEnv();
@@ -75,9 +77,12 @@ void runloop() {
 	string look = R"(a)";
 	string if_ = R"((if 0 3 4))";
 	string plus = R"((+ 1 123))";
+	string func = R"((define (f a) (+ a 11)))";
+	string funcCall = R"((f 1))";
 	//testEval(define, init);
-	//testEval(look, init);
-	testEval(plus, init);
+	//testEval(plus, init);
+	testEval(func, init);
+	testEval(funcCall, init);
 
 	//testParser(input);
 	//testParser(input1);
@@ -99,6 +104,7 @@ void runloop() {
 
 int main() {
 	runloop();
+	cout << "hello world" << endl;
 	int a = 3;
 	//map<int, shared_ptr<int>> a;
 	//auto b =make_shared<int>(3);

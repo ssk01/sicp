@@ -50,10 +50,12 @@ public:
 			}
 			else if (type == Type::List) {
 				list->addValue(getList(i));
+				//i++;
 
 				//return (i);
 			}
 		}
+		i++;
 		//return  (shared_ptr<SchemeValue>)(SchemeValue*)list;
 		return list;
 	}
@@ -70,8 +72,13 @@ public:
 		//assert(input[i] == ';');
 		auto beg = i;
 		//i++;
-		while (input.size()> i && (!isspace(input[i]))) {
+		if (specialString.find(input[i]) != -1) {
 			i++;
+		}
+		else {
+			while (input.size() > i && (!isspace(input[i]) && (specialString.find(input[i]) == -1))) {
+				i++;
+			}
 		}
 		return make_shared<SymbolValue>(input.substr(beg, i - beg));
 	}
@@ -121,6 +128,8 @@ public:
 		i++;
 		}*/
 	}
+	static const string specialString;
+
 	string input;
 };
 //pair<Type, string> peek(const string& input) {

@@ -5,20 +5,19 @@
 #include <iostream>
 using std::shared_ptr;
 using std::map;
-class Env{
+class Env {
 public:
 	//enclosingEnvironment
 	Env() = default;
-	Env(shared_ptr<Env> parent_):parent(parent){}
+	Env(shared_ptr<Env> parent_) :parent(parent_) {}
 	shared_ptr<Env> parent;
 	map<string, shared_ptr<SchemeValue>> env;
 
 	shared_ptr<SchemeValue> lookup(shared_ptr<SchemeValue> var_) {
 		//return {};
-		if ()
 		auto var = var_->toString();
 		if (env.find(var) == env.end()) {
-			if (parent.get() != nullptr){
+			if (parent.get() != nullptr) {
 				return parent->lookup(var_);
 			}
 			std::cout << "not find 404" << var_->toString();
@@ -30,7 +29,11 @@ public:
 		auto var = var_->toString();
 		env[var] = val;
 	}
+	void define(const string& var, shared_ptr<SchemeValue> val) {
+		//auto var = var_->toString();
+		env[var] = val;
+	}
 };
 EnvPtr initEnv();
 using EnvPtr = shared_ptr<Env>;
-//æ˜¯å¦è¦çœ‹è§å®ç°æ‰èƒ½ä½¿ç”¨ shared_ptr
+//ÊÇ·ñÒª¿´¼ûÊµÏÖ²ÅÄÜÊ¹ÓÃ shared_ptr

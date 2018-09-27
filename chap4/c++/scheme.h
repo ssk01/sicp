@@ -7,22 +7,23 @@
 #include <assert.h>
 #include <functional>
 #include "util.h"
-// #include "env.h"
 //using namespace std;
-class Env;
-using EnvPtr = shared_ptr<Env>;
-
 using std::ostream;
 using std::string;
 using std::shared_ptr;
 using std::vector;
 using std::cout;
+using std::make_shared;
 using std::endl;
 class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
-vector<string> listToString(const vecotr<shared_ptr<SchemeValue>> &lists);
-
+class VoidValue;
+class SchemeValue;
+shared_ptr<SchemeValue> Void();
+vector<string> listToString(const vector<shared_ptr<SchemeValue>> &lists);
+class Env;
+using EnvPtr = shared_ptr<Env>;
 class SchemeValue {
 public:
 	virtual void print(ostream& out) const = 0;
@@ -36,11 +37,11 @@ public:
 	virtual bool F() {
 		return !T();
 	}
-	virtual	shared_ptr<SchemeValue> body override{
+	virtual	shared_ptr<SchemeValue> body(){
 		fck("type error");
 		return Void();
 	}
-	virtual bool isDefinition() {
+		virtual bool isDefinition() {
 		return false;
 	}
 	virtual bool isProcedure() {
@@ -77,14 +78,14 @@ public:
 		return Void();
 
 	}
-	virtual shared_ptr<SchemeValue> val() {
+	virtual shared_ptr<SchemeValue> val(EnvPtr env) {
 		fck("type error");
 		return Void();
 
 	}
-	virtual shared_ptr<SchemeValue> newEnv(vector<shared_ptr> argsValue){
+	virtual EnvPtr newEnv(vector<shared_ptr<SchemeValue>> argsValue) {
 		fck("type error");
-		return Void();
+		return nullptr;
 	}
 	virtual shared_ptr<SchemeValue> call(vector<shared_ptr<SchemeValue>>) {
 		exit(0);
@@ -123,7 +124,7 @@ public:
 	virtual vector<shared_ptr<SchemeValue>> operands() {
 		return cdr(1);
 	}
-	
+
 	virtual shared_ptr<SchemeValue> predict() {
 		return car(1);
 	}
@@ -148,13 +149,12 @@ public:
 
 };
 
+ostream& operator<<(ostream& out, const SchemeValue& a); 
 class VoidValue : public SchemeValue {
 	void print(ostream& out) const override {
 		out << "#void";
 	}
 };
-
-
 class Procedure : public SchemeValue {
 public:
 	void print(ostream& out) const override {
@@ -202,6 +202,7 @@ class SymbolValue : public SchemeValue {
 public:
 	SymbolValue(const string& input) : value(input) {}
 	string value;
+
 	void print(ostream& out) const override {
 		out << " symbol: ";
 		out << value;
@@ -219,29 +220,25 @@ public:
 
 class LambdaValue : public SchemeValue {
 public:
-	LambdaValue(vector<string> args, shared_ptr<SchemeValue> body, EnvPtr& env): args(args), body(body), parent(env) {}
-    bool isLambda() override {
+	void print(ostream& out) const override {
+		out << " LambdaValue: ";
+	}
+
+	LambdaValue(vector<string>& args, shared_ptr<SchemeValue> body, EnvPtr env) : args(args), value(body), parent(env) {}
+	bool isLambda() override {
 		return true;
 	}
-	bool isProcedure() override{
+	bool isProcedure() override {
 		return true;
 	}
-	shared_ptr<SchemeValue> body override{
-		return body;
+	shared_ptr<SchemeValue> body() override {
+		return value;
 	}
-	shared_ptr<SchemeValue> newEnv(vector<shared_ptr> argsValue){
-		auto env = make_shared<Env>(parent);
-		assert(args.size() == argsValue.size());
-		for (int i = 0; i < args.size(); i++){
-			env->define(args[i], argsValue[i]);
-		}
-		return env;
-	}
+	EnvPtr newEnv(vector<shared_ptr<SchemeValue>> argsValue) override;
 	EnvPtr parent;
 	vector<string> args;
-	shared_ptr<SchemeValue> body
+	shared_ptr<SchemeValue> value;
 };
-
 
 class StringValue : public SchemeValue {
 public:
@@ -255,7 +252,6 @@ public:
 		return true;
 	}
 };
-
 class ListValue : public SchemeValue {
 
 public:
@@ -280,24 +276,24 @@ public:
 		}
 		return {};
 	}
-	shared_ptr<SchemeValue> var() {
+	shared_ptr<SchemeValue> var() override {
 		assert(value.size() == 3);
 		if (car(1)->isVariable()) {
 			return car(1);
 		}
 		else if (car(1)->isPair()) {
-			return car(1)->car(0)
+			return car(1)->car(0);
 		}
 		fck("type error");
 	}
-	shared_ptr<SchemeValue> val() {
+	shared_ptr<SchemeValue> val(EnvPtr env) override {
 		assert(value.size() == 3);
 		if (car(1)->isVariable()) {
 			return car(2);
 		}
 		else if (car(1)->isPair()) {
-			
-			return make_lambda<LambdaValue>(listToString(car(1)->cdr(1)), car(2));
+			return make_shared<LambdaValue>(listToString(car(1)->cdr(1)), car(2), env);
+
 		}
 	}
 	bool isDefinition() override {
@@ -333,4 +329,3 @@ public:
 	vector<shared_ptr<SchemeValue>> value;
 };
 
-ostream& operator<<(ostream& out, const SchemeValue& a); 

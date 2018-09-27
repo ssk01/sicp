@@ -16,6 +16,6 @@ EnvPtr initEnv() {
 		}
 		return make_shared<IntValue>(res);
 	}, true);
-	init->define(make_shared<SymbolValue>("+"),plus);
+	init->define(make_shared<SymbolValue>("+"), plus);
 	return init;
 }

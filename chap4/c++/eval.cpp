@@ -5,15 +5,16 @@ shared_ptr<SchemeValue> apply(shared_ptr<SchemeValue> procedure, vector<shared_p
 	if (procedure->isProcedure()) {
 		if (procedure->isPrimitiveProcedure()) {
 			return procedure->call(arguments);
-		}	else if (procedure->isLambda()){
+		}
+		else if (procedure->isLambda()) {
 			auto env = procedure->newEnv(arguments);
 			return eval(procedure->body(), env);
 		}
-	} 
+	}
 	fck("apply fuck");
 }
 
-vector<shared_ptr<SchemeValue>>  listOfValue(vector<shared_ptr<SchemeValue>> arguments, Env& env) {
+vector<shared_ptr<SchemeValue>>  listOfValue(vector<shared_ptr<SchemeValue>> arguments, EnvPtr env) {
 	vector<shared_ptr<SchemeValue>> result;
 	for (auto arg : arguments) {
 		result.emplace_back(eval(arg, env));
@@ -33,8 +34,11 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	}
 	else if (exp->isDefinition()) {
 		//auto a = 1;
-		env->define(exp->var(), eval(exp->val(), env));
-		return make_shared<VoidValue>();
+		env->define(exp->var(), eval(exp->val(env), env));
+		return make_shared< VoidValue>();
+	}
+	else if (exp->isLambda()) {
+		return exp;
 	}
 	else if (exp->isIf()) {
 		auto predict = eval(exp->predict(), env);
