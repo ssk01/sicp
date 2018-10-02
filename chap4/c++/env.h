@@ -20,7 +20,7 @@ public:
 			if (parent.get() != nullptr) {
 				return parent->lookup(var_);
 			}
-			std::cout << "not find 404" << var_->toString();
+			std::cout << "not find 404:" << var_->toString()<<" fck";
 			exit(1);
 		}
 		return env[var];

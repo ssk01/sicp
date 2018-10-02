@@ -33,6 +33,7 @@ public:
 		//auto list = new ListValue();
 		auto list = make_shared<ListValue>();
 		//auto list = new ListValue();
+		auto type = peek(i);
 		while (input[i] != ')') {
 			auto type = peek(i);
 			if (type == Type::Int) {

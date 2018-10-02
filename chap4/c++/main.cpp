@@ -8,6 +8,8 @@
 #include "env.h"
 #include "parser.h"
 #include "eval.h"
+#include <numeric>
+#include <algorithm>
 using namespace std;
 
 // 1
@@ -56,11 +58,19 @@ void testParser(string& input) {
 void testEval(string& input, EnvPtr init) {
 	Parser a{ input };
 	auto b = a.parser();
-	cout << *(b) << endl;
-	cout << "parser success" << endl;
+	/*cout << *(b) << endl;
+	cout << "parser success" << endl;*/
 	cout << "result " <<*eval(b, init) << endl;;
 
 }
+void testEval(vector<string>& programs) {
+	auto init = initEnv();
+	for (auto p : programs) {
+		testEval(p, init);
+	}
+
+}
+
  //todo support for - int;
 
 void runloop() {
@@ -75,15 +85,27 @@ void runloop() {
 
 	string defineLambda = R"((define (f a) (+ a 1)))";
 	string look = R"(a)";
-	string if_ = R"((if 0 3 4))";
+	string if_ = R"((if a 3 4))";
 	string plus = R"((+ 1 123))";
 	string func = R"((define (f a) (+ a 11)))";
 	string funcCall = R"((f 1))";
 	//testEval(define, init);
 	//testEval(plus, init);
-	testEval(func, init);
-	testEval(funcCall, init);
+	/*testEval(func, init);
+	testEval(funcCall, init);*/
+	string funFact = R"(
+(define (fact n)
+		(if (< n 1)
+			1
+			( * n (fact (- n 1)))))
+	)";
+	//(*n(fact(-n 1)))))
 
+	string funFactCall = R"((fact 5))";
+	testEval(vector<string>{ funFact, funFactCall });
+	//testEval(vector<string>{ plus });
+	//testEval(vector<string>{ define, if_ });
+	//testEval(vector<string>{ define, "(< a 3)" });
 	//testParser(input);
 	//testParser(input1);
 	//testParser(list);
@@ -104,6 +126,7 @@ void runloop() {
 
 int main() {
 	runloop();
+
 	cout << "hello world" << endl;
 	int a = 3;
 	//map<int, shared_ptr<int>> a;

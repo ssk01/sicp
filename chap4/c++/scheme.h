@@ -170,9 +170,9 @@ public:
 		return value(args);
 	}
 	using func = std::function<shared_ptr<SchemeValue>(vector<shared_ptr<SchemeValue>>)>;
-	Procedure(func input, bool primitived=false):value(input), primitive(primitived){}
+	Procedure(func input):value(input){}
 	func value;
-	bool primitive;
+	//bool primitive;
 
 };
 class IntValue : public SchemeValue {
