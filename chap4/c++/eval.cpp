@@ -35,7 +35,7 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	else if (exp->isDefinition()) {
 		//auto a = 1;
 		env->define(exp->var(), eval(exp->val(env), env));
-		return make_shared< VoidValue>();
+		return make_shared<VoidValue>();
 	}
 	else if (exp->isLambda()) {
 		return exp;
@@ -49,6 +49,8 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 		if (falseBranch != Void()) {
 			return eval(falseBranch, env);
 		}
+	}
+	else if (exp->isTagged("cond")) {
 
 	}
 	else if (exp->application()) {
@@ -60,7 +62,7 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	}
 
 	//return {};
-	return make_shared< VoidValue>();
+	return make_shared<VoidValue>();
 
 
 }

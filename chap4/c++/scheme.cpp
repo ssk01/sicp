@@ -25,3 +25,30 @@ EnvPtr LambdaValue::newEnv(vector<shared_ptr<SchemeValue>> argsValue)  {
 	}
 	return env;
 }
+shared_ptr<SchemeValue> makeIf(shared_ptr<SchemeValue> cond, shared_ptr<SchemeValue> falseBranch, shared_ptr<SchemeValue> trueBranch) {
+	auto if_ = make_shared<ListValue>();
+	if_->addValue(make_shared<SymbolValue>("if"));
+	if_->addValue(cond);
+	if_->addValue(falseBranch);
+	if_->addValue(trueBranch);
+	return if_;
+
+}
+shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp) {
+	return _expandClauses(exp, 0);
+}
+shared_ptr<SchemeValue> _expandClauses(vector<shared_ptr<SchemeValue>> exp, int i) {
+	if (i < exp.size()) {
+		auto clause = exp[i];
+		if (clause->isTagged("else")) {
+			if (exp.size() != 1) {
+				fck("after else should be empty");
+			}
+			return clause->causeExp();
+		}
+		else {
+			return makeIf(clause->causeCond(), clause->causeExp(), _expandClauses(exp, i + 1));
+		}
+	}
+	return Void();
+}

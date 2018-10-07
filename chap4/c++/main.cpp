@@ -86,6 +86,8 @@ void runloop() {
 	string defineLambda = R"((define (f a) (+ a 1)))";
 	string look = R"(a)";
 	string if_ = R"((if a 3 4))";
+	string if_1 = R"((if a 3 ))";
+	string if_2 = R"((if 0 3 ))";
 	string plus = R"((+ 1 123))";
 	string func = R"((define (f a) (+ a 11)))";
 	string funcCall = R"((f 1))";
@@ -97,14 +99,24 @@ void runloop() {
 (define (fact n)
 		(if (< n 1)
 			1
-			( * n (fact (- n 1)))))
+			(* n (fact(- n 1)))))
 	)";
 	//(*n(fact(-n 1)))))
+	string cond = R"(
+		(define (cond test) 
+			(cond ((= test 1) 1)
+				((> test 2) 3)
+				(else 3)	
+			)
+		)
+
+)";
 
 	string funFactCall = R"((fact 5))";
-	testEval(vector<string>{ funFact, funFactCall });
+	//testEval(vector<string>{ funFact, funFactCall });
 	//testEval(vector<string>{ plus });
 	//testEval(vector<string>{ define, if_ });
+	testEval(vector<string>{ define, if_1, if_2 });
 	//testEval(vector<string>{ define, "(< a 3)" });
 	//testParser(input);
 	//testParser(input1);

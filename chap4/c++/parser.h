@@ -35,7 +35,6 @@ public:
 		//auto list = new ListValue();
 		auto type = peek(i);
 		while (input[i] != ')') {
-			auto type = peek(i);
 			if (type == Type::Int) {
 				list->addValue(getInt(i));
 			}
@@ -55,6 +54,7 @@ public:
 
 				//return (i);
 			}
+			type = peek(i);
 		}
 		i++;
 		//return  (shared_ptr<SchemeValue>)(SchemeValue*)list;

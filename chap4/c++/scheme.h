@@ -67,6 +67,9 @@ public:
 	virtual bool isIf() {
 		return false;
 	}
+	virtual bool isTagged(const string& tag){
+		return false;
+	}
 	virtual bool isInt() {
 		return false;
 	}
@@ -124,7 +127,18 @@ public:
 	virtual vector<shared_ptr<SchemeValue>> operands() {
 		return cdr(1);
 	}
+	virtual shared_ptr<SchemeValue> causeExp() {
+		return car(1);
+	}
+	virtual vector<shared_ptr<SchemeValue>> causes() {
+		return cdr(1);
+	}
 
+
+	
+	virtual shared_ptr<SchemeValue> causeCond() {
+		return car(0);
+	}	
 	virtual shared_ptr<SchemeValue> predict() {
 		return car(1);
 	}
@@ -139,12 +153,12 @@ public:
 		return{};
 	}
 
+
+	virtual ~SchemeValue() {};
+//protected:
 	virtual bool is(const string& word) {
 		return false;
 	}
-	virtual ~SchemeValue() {};
-
-
 	//virtual ostream& operator<<(ostream& out) = 0;
 
 };
@@ -307,6 +321,12 @@ public:
 	}
 
 	bool isIf() override {
+		if (value.size() > 0 && value[0]->is("if")) {
+			return true;
+		}
+		return false;
+	}
+	bool isTagged(const string& tag) override {
 		if (value.size() > 0 && value[0]->is("if")) {
 			return true;
 		}
