@@ -72,6 +72,24 @@ void testEval(vector<string>& programs) {
 }
 
  //todo support for - int;
+
+void letTest() {
+	string let = R"(
+	(define (squaresum a b)
+			(let ((x (* a a))
+				   (y (* b b)))
+				(+ x y)
+			)
+	)	
+	
+)";
+	string let1 = R"(
+	(squaresum 3 4)
+)";
+	
+	testEval(vector<string>{ let, let1 });
+
+}
 void condTest() {
 
 	string cond = R"(
@@ -130,7 +148,7 @@ void runloop() {
 
 	//(*n(fact(-n 1)))))
 	//((> test 2) 3)
-
+	letTest();
 	//testEval(vector<string>{ funFact, funFactCall });
 	//testEval(vector<string>{ plus });
 	//testEval(vector<string>{ define, if_ });

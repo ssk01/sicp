@@ -22,7 +22,7 @@ shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp);
 class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
-vector<string> listToString(const vector<shared_ptr<SchemeValue>> &lists);
+vector<string> listToString(vector<shared_ptr<SchemeValue>> &lists);
 class Env;
 using EnvPtr = shared_ptr<Env>;
 class SchemeValue {
@@ -134,9 +134,19 @@ public:
 	virtual vector<shared_ptr<SchemeValue>> causes() {
 		return cdr(1);
 	}
-
-
 	
+	virtual shared_ptr<SchemeValue> letBody() {
+		return car(2);
+	}
+	virtual shared_ptr<SchemeValue> letArgVar() {
+		return car(0);
+	}
+	virtual shared_ptr<SchemeValue> letArgVal() {
+		return car(1);
+	}
+	virtual vector<shared_ptr<SchemeValue>> letArgs() {
+		return car(1)->cdr(0);
+	}
 	virtual shared_ptr<SchemeValue> causeCond() {
 		return car(0);
 	}	
