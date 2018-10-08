@@ -35,5 +35,51 @@ EnvPtr initEnv() {
 	init->define(make_shared<SymbolValue>("<"), little);
 	init->define(make_shared<SymbolValue>(">"), great);
 	init->define(make_shared<SymbolValue>("="), eq);
+	auto cons = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		if (args.size() != 2) {
+			fck("cons arg lens false");
+		}
+		auto list = make_shared<ListValue>();
+		list->addValue(args[0]);
+		//(cons 1 (list 2))  :ok
+		//(cons 1 2): false todo
+		for (auto v : args[1]->cdr[0]) {
+			list->addValue(v);
+		}
+		return list;
+	});
+	auto append = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		if (args.size() != 2) {
+			fck("cons arg lens false");
+		}
+		
+		auto list = make_shared<ListValue>();
+		for (auto v : args[0]->cdr[0]) {
+			list->addValue(v);
+		}
+		for (auto v : args[1]->cdr[0]) {
+			list->addValue(v);
+		}
+		return list;
+	});
+	auto car = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+			//args
+		return args[0]->
+	});
+	auto cdr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+
+	});
+	auto cadr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+
+	});
+	auto caddr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+
+	});
 	return init;
 }
