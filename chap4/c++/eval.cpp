@@ -34,7 +34,9 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	}
 	else if (exp->isDefinition()) {
 		//auto a = 1;
-		env->define(exp->var(), eval(exp->val(env), env));
+		auto var = exp->var();
+		auto val = eval(exp->val(env), env);
+		env->define(var, val);
 		return make_shared<VoidValue>();
 	}
 	else if (exp->isLambda()) {
@@ -51,7 +53,7 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 		}
 	}
 	else if (exp->isTagged("cond")) {
-
+		return eval(expandClauses(exp->causes()), env);
 	}
 	else if (exp->application()) {
 		return apply(eval(exp->operators(), env), listOfValue(exp->operands(), env));

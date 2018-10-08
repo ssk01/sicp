@@ -34,14 +34,12 @@ shared_ptr<SchemeValue> makeIf(shared_ptr<SchemeValue> cond, shared_ptr<SchemeVa
 	return if_;
 
 }
-shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp) {
-	return _expandClauses(exp, 0);
-}
+
 shared_ptr<SchemeValue> _expandClauses(vector<shared_ptr<SchemeValue>> exp, int i) {
 	if (i < exp.size()) {
 		auto clause = exp[i];
 		if (clause->isTagged("else")) {
-			if (exp.size() != 1) {
+			if (i != exp.size()-1) {
 				fck("after else should be empty");
 			}
 			return clause->causeExp();
@@ -51,4 +49,8 @@ shared_ptr<SchemeValue> _expandClauses(vector<shared_ptr<SchemeValue>> exp, int 
 		}
 	}
 	return Void();
+}
+
+shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp) {
+	return _expandClauses(exp, 0);
 }

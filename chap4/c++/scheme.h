@@ -18,6 +18,7 @@ using std::endl;
 class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
+shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp);
 class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
@@ -327,7 +328,7 @@ public:
 		return false;
 	}
 	bool isTagged(const string& tag) override {
-		if (value.size() > 0 && value[0]->is("if")) {
+		if (value.size() > 0 && value[0]->is(tag)) {
 			return true;
 		}
 		return false;

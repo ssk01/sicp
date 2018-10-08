@@ -72,7 +72,32 @@ void testEval(vector<string>& programs) {
 }
 
  //todo support for - int;
+void condTest() {
 
+	string cond = R"(
+		(define (conds test) 
+			(cond ((= test 1) 1)
+	((> test 2) 3)
+
+				(else 4)	
+			)
+		)
+
+)";
+	string cond_1 = R"(
+	(conds 1)
+)";
+	string cond_2 = R"(
+	(conds 2)
+)";
+	string cond_3 = R"(
+	(conds 3)
+)";
+	string cond_4 = R"(
+	(conds 4)
+)";
+	testEval(vector<string>{ cond, cond_1, cond_2, cond_3, cond_4 });
+}
 void runloop() {
 	auto init = initEnv();
 	string input = R"("a b c")";
@@ -101,22 +126,15 @@ void runloop() {
 			1
 			(* n (fact(- n 1)))))
 	)";
-	//(*n(fact(-n 1)))))
-	string cond = R"(
-		(define (cond test) 
-			(cond ((= test 1) 1)
-				((> test 2) 3)
-				(else 3)	
-			)
-		)
-
-)";
-
 	string funFactCall = R"((fact 5))";
+
+	//(*n(fact(-n 1)))))
+	//((> test 2) 3)
+
 	//testEval(vector<string>{ funFact, funFactCall });
 	//testEval(vector<string>{ plus });
 	//testEval(vector<string>{ define, if_ });
-	testEval(vector<string>{ define, if_1, if_2 });
+	//testEval(vector<string>{ define, if_1, if_2 });
 	//testEval(vector<string>{ define, "(< a 3)" });
 	//testParser(input);
 	//testParser(input1);

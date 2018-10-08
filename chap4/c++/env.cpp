@@ -18,6 +18,7 @@ EnvPtr initEnv() {
 	auto sub = listProc([](int a, int b) {return a - b; });
 	auto mul = listProc([](int a, int b) {return a * b; });
 	auto div = listProc([](int a, int b) {return a / b; });
+	auto eq = listProc([](int a, int b) {return a == b; });
 	auto little = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args) -> shared_ptr<SchemeValue> {
 			return make_shared<IntValue>(args[0]->intValue() < args[1]->intValue());
@@ -33,5 +34,6 @@ EnvPtr initEnv() {
 	init->define(make_shared<SymbolValue>("*"), mul);
 	init->define(make_shared<SymbolValue>("<"), little);
 	init->define(make_shared<SymbolValue>(">"), great);
+	init->define(make_shared<SymbolValue>("="), eq);
 	return init;
 }
