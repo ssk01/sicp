@@ -30,6 +30,7 @@ using EnvPtr = shared_ptr<Env>;
 class SchemeValue {
 public:
 	virtual void print(ostream& out) const = 0;
+	virtual void print(ostream& out, bool outside) const {}// const = 0;
 	virtual bool selfEvaluting() {
 		return false;
 	}
@@ -51,11 +52,11 @@ public:
 		return false;
 	}
 	virtual SchemeValuePtr pairFirst() {
-		fck("type error");
+		fck("type error, should be pair");
 		return Void();
 	}
 	virtual SchemeValuePtr pairSecond() {
-		fck("type error");
+		fck("type error, should be pair");
 		return Void();
 	}
 	virtual bool isProcedure() {
@@ -313,12 +314,41 @@ public:
 		//return Void();
 	}
 	SchemeValuePtr pairSecond() override {
+		//if (second->isVoid()) {
+		//	return 
+		//}
 		return second;
 		//fck("type error");
 		//return Void();
 	}
-	void print(ostream& out) const override {
-		out << "( ";
+	void print(ostream& out, bool outside) const override {
+		if (outside) {
+			out << "( ";
+		}
+		first->print(out);
+		out << " ";
+		//if (!second->isPair()) {
+		//	out << ". ";
+		//}
+		//out << ".a ";
+
+		if (!second->isVoid()) {
+			if (second->isPair()) {
+				second->print(out, false);
+			}
+			else {
+				out << ". ";
+				second->print(out);
+			}
+		}
+		if (outside) {
+
+			out << ")";
+		}
+		
+	}
+	void print(ostream& out	) const override {
+		/*out << "( ";
 		first->print(out);
 		if (!second->isPair()) {
 			out << ", ";
@@ -326,8 +356,10 @@ public:
 		if (!second->isVoid()) {
 			second->print(out);
 		}
-		out << ")";
+		out << ")";*/
+		print(out, true);
 	}
+	
 	//void print(ostream& out) const override {
 	//}
 	PairValue(SchemeValuePtr first, SchemeValuePtr second): first(first), second(second) {

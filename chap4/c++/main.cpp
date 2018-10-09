@@ -60,14 +60,20 @@ void testEval(string& input, EnvPtr init) {
 	auto b = a.parser();
 	/*cout << *(b) << endl;
 	cout << "parser success" << endl;*/
-	cout << "result " <<*eval(b, init) << endl;;
+	cout << ">...........................................<" << endl;
+	cout << input << "\tresult ";
+	cout << *eval(b, init) << endl;
+	cout << ">...........................................<" << endl;
+
 
 }
 void testEval(vector<string>& programs) {
+	cout << "________________________________ test begin________________________________" << endl;
 	auto init = initEnv();
 	for (auto p : programs) {
 		testEval(p, init);
 	}
+	cout << "________________________________ test end________________________________" << endl;
 
 }
 
@@ -76,31 +82,34 @@ void consTest() {
 	string cons = R"(
 	(define a (cons (cons 1 2) (cons 3 4)))
 )";
-	string cons1 = R"(
+	string cons_1 = R"(
 	(define a1 (cons 1 (list 2 3)))
 )";
-
+	string list = R"( 
+	(list 1 2)
+)";
 	string cons2 = R"(
 	(car a)
 )";
 	string cons3 = R"(
 	(cdr a)
 )";
-	string cons4 = R"(
+	string cons_2 = R"(
 	(car a1)
 )";
-	string cons5 = R"(
+	string cons_3 = R"(
 	(cdr a1)
 )";
-	string cons6 = R"(
-	( a0)
+	string cons1 = R"(
+	 a
 )";	
-	string cons7 = R"(
-	( a1)
+	string cons_4 = R"(
+	 a1
 )";
-	testEval(vector<string>{ cons, cons1, cons2, cons3,
-		cons4,cons5, cons6, cons7});
-
+	//testEval(vector<string>{ list});
+	//testEval(vector<string>{ cons_1, cons_4, cons_2, cons_3, "(cadr a1)", "(caddr a1)",
+		//"(cddr a1)", "(cdr (cdddr a1))"});
+	testEval(vector<string>{ cons, cons1, cons2, cons3, "(car (car a))", "(cdr (car a))"});
 
 }
 void letTest() {
@@ -178,7 +187,8 @@ void runloop() {
 
 	//(*n(fact(-n 1)))))
 	//((> test 2) 3)
-	letTest();
+	//letTest();
+	consTest();
 	//testEval(vector<string>{ funFact, funFactCall });
 	//testEval(vector<string>{ plus });
 	//testEval(vector<string>{ define, if_ });

@@ -55,7 +55,7 @@ EnvPtr initEnv() {
 			fck("append arg lens false");
 		}
 		if (args[0]->isPairList() && args[1]->isPairList()) {
-			append(args[0], args[1]);
+			return append(args[0], args[1]);
 		}
 		fck("append type error");
 	});
@@ -85,16 +85,39 @@ EnvPtr initEnv() {
 		}
 		return cdr(args[0]);
 	});
+	auto _cddr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		if (args.size() != 1) {
+			fck("cons arg lens false");
+		}
+		return cdr(cdr(args[0]));
+	});
+	auto _cdddr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		if (args.size() != 1) {
+			fck("cons arg lens false");
+		}
+		return cdr(cdr(cdr(args[0])));
+	});
 	auto _cadr = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
-
+		if (args.size() != 1) {
+			fck("cons arg lens false");
+		}
+		return (car(cdr(args[0])));
 	});
 	auto _caddr = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
-
+		if (args.size() != 1) {
+			fck("cons arg lens false");
+		}
+		return (car(cdr(cdr(args[0]))));
 	});
+	init->define("cons", _cons);
 	init->define("car", _car);
 	init->define("cdr", _cdr);
+	init->define("cddr", _cddr);
+	init->define("cdddr", _cdddr);
 	init->define("cadr", _cadr);
 	init->define("caddr", _caddr);
 	init->define("append", _append);

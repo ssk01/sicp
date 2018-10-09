@@ -29,7 +29,7 @@ SchemeValuePtr cdr(SchemeValuePtr exp) {
 }
 SchemeValuePtr makeList(vector<SchemeValuePtr> exp) {
 	auto prev = Void();
-	for (auto beg = exp.cbegin(); beg != exp.cend(); beg++) {
+	for (auto beg = exp.rbegin(); beg != exp.rend(); beg++) {
 		prev = cons(*beg, prev);
 	}
 	return prev;
