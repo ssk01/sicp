@@ -18,3 +18,25 @@ vector<string> listToString( vector<shared_ptr<SchemeValue>> &lists) {
 	}
 	return result;
 }
+SchemeValuePtr cons(SchemeValuePtr first, SchemeValuePtr second) {
+	return make_shared<PairValue>(first, second);
+}
+SchemeValuePtr car(SchemeValuePtr exp) {
+	return exp->pairFirst();
+}
+SchemeValuePtr cdr(SchemeValuePtr exp) {
+	return exp->pairSecond();
+}
+SchemeValuePtr makeList(vector<SchemeValuePtr> exp) {
+	auto prev = Void();
+	for (auto beg = exp.cbegin(); beg != exp.cend(); beg++) {
+		prev = cons(*beg, prev);
+	}
+	return prev;
+}
+SchemeValuePtr append(SchemeValuePtr first, SchemeValuePtr second) {
+	if (first->isVoid()) {
+		return second;
+	}
+	return cons(car(first), append(cdr(first), second));
+}

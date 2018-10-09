@@ -72,7 +72,37 @@ void testEval(vector<string>& programs) {
 }
 
  //todo support for - int;
+void consTest() {
+	string cons = R"(
+	(define a (cons (cons 1 2) (cons 3 4)))
+)";
+	string cons1 = R"(
+	(define a1 (cons 1 (list 2 3)))
+)";
 
+	string cons2 = R"(
+	(car a)
+)";
+	string cons3 = R"(
+	(cdr a)
+)";
+	string cons4 = R"(
+	(car a1)
+)";
+	string cons5 = R"(
+	(cdr a1)
+)";
+	string cons6 = R"(
+	( a0)
+)";	
+	string cons7 = R"(
+	( a1)
+)";
+	testEval(vector<string>{ cons, cons1, cons2, cons3,
+		cons4,cons5, cons6, cons7});
+
+
+}
 void letTest() {
 	string let = R"(
 	(define (squaresum a b)

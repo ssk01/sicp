@@ -35,51 +35,71 @@ EnvPtr initEnv() {
 	init->define(make_shared<SymbolValue>("<"), little);
 	init->define(make_shared<SymbolValue>(">"), great);
 	init->define(make_shared<SymbolValue>("="), eq);
-	auto cons = make_shared<Procedure>(
+	auto _cons = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
 		if (args.size() != 2) {
 			fck("cons arg lens false");
 		}
-		auto list = make_shared<ListValue>();
-		list->addValue(args[0]);
-		//(cons 1 (list 2))  :ok
-		//(cons 1 2): false todo
-		for (auto v : args[1]->cdr[0]) {
-			list->addValue(v);
-		}
-		return list;
+		//auto list = make_shared<ListValue>();
+		//list->addValue(args[0]);
+		////(cons 1 (list 2))  :ok
+		////(cons 1 2): false todo
+		//for (auto v : args[1]->cdr[0]) {
+		//	list->addValue(v);
+		//}
+		return cons(args[0], args[1]);
 	});
-	auto append = make_shared<Procedure>(
+	auto _append = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
 		if (args.size() != 2) {
-			fck("cons arg lens false");
+			fck("append arg lens false");
 		}
-		
-		auto list = make_shared<ListValue>();
-		for (auto v : args[0]->cdr[0]) {
-			list->addValue(v);
+		if (args[0]->isPairList() && args[1]->isPairList()) {
+			append(args[0], args[1]);
 		}
-		for (auto v : args[1]->cdr[0]) {
-			list->addValue(v);
-		}
-		return list;
+		fck("append type error");
 	});
-	auto car = make_shared<Procedure>(
+	//auto null = Vo
+
+	auto list = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		//args
+		if (args.size()  == 0) {
+			fck("list arg lens false");
+		}
+		return makeList(args);
+		//return car(args[0]);
+	});
+	auto _car = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
 			//args
-		return args[0]->
+		if (args.size() != 1) {
+			fck("cars arg lens false");
+		}
+		return car(args[0]);
 	});
-	auto cdr = make_shared<Procedure>(
+	auto _cdr = make_shared<Procedure>(
+		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
+		if (args.size() != 1) {
+			fck("cons arg lens false");
+		}
+		return cdr(args[0]);
+	});
+	auto _cadr = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
 
 	});
-	auto cadr = make_shared<Procedure>(
+	auto _caddr = make_shared<Procedure>(
 		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
 
 	});
-	auto caddr = make_shared<Procedure>(
-		[](vector<shared_ptr<SchemeValue>> args)->shared_ptr<SchemeValue> {
-
-	});
+	init->define("car", _car);
+	init->define("cdr", _cdr);
+	init->define("cadr", _cadr);
+	init->define("caddr", _caddr);
+	init->define("append", _append);
+	init->define("list", list);
+	init->define("null", Void());
+	init->define("nil", Void());
 	return init;
 }

@@ -17,6 +17,7 @@ using std::make_shared;
 using std::endl;
 class VoidValue;
 class SchemeValue;
+using SchemeValuePtr = shared_ptr<SchemeValue>;
 shared_ptr<SchemeValue> Void();
 shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp);
 class VoidValue;
@@ -25,6 +26,7 @@ shared_ptr<SchemeValue> Void();
 vector<string> listToString(vector<shared_ptr<SchemeValue>> &lists);
 class Env;
 using EnvPtr = shared_ptr<Env>;
+
 class SchemeValue {
 public:
 	virtual void print(ostream& out) const = 0;
@@ -42,8 +44,19 @@ public:
 		fck("type error");
 		return Void();
 	}
-		virtual bool isDefinition() {
+	virtual bool isDefinition() {
 		return false;
+	}
+	virtual bool isVoid()  {
+		return false;
+	}
+	virtual SchemeValuePtr pairFirst() {
+		fck("type error");
+		return Void();
+	}
+	virtual SchemeValuePtr pairSecond() {
+		fck("type error");
+		return Void();
 	}
 	virtual bool isProcedure() {
 		return false;
@@ -51,6 +64,7 @@ public:
 	virtual bool isLambda() {
 		return false;
 	}
+	
 	virtual bool isPrimitiveProcedure() {
 		return false;
 	}
@@ -75,6 +89,9 @@ public:
 		return false;
 	}
 	virtual bool isVariable() {
+		return false;
+	}
+	virtual bool isPairList() {
 		return false;
 	}
 	virtual shared_ptr<SchemeValue> var() {
@@ -179,6 +196,9 @@ class VoidValue : public SchemeValue {
 	void print(ostream& out) const override {
 		out << "#void";
 	}
+	bool isVoid() override {
+		return true;
+	}
 };
 class Procedure : public SchemeValue {
 public:
@@ -213,6 +233,9 @@ public:
 	}
 	int intValue() override {
 		return value;
+	}
+	virtual bool isPair() {
+		return false;
 	}
 	IntValue(const string& input) : value(stoi(input)) {
 	}
@@ -276,6 +299,51 @@ public:
 	bool selfEvaluting() override {
 		return true;
 	}
+};
+
+class PairValue : public SchemeValue {
+public:
+
+	PairValue() {
+	}
+	//void print()
+	SchemeValuePtr pairFirst() override {
+		return first;
+		//fck("type error");
+		//return Void();
+	}
+	SchemeValuePtr pairSecond() override {
+		return second;
+		//fck("type error");
+		//return Void();
+	}
+	void print(ostream& out) const override {
+		out << "( ";
+		first->print(out);
+		if (!second->isPair()) {
+			out << ", ";
+		}
+		if (!second->isVoid()) {
+			second->print(out);
+		}
+		out << ")";
+	}
+	//void print(ostream& out) const override {
+	//}
+	PairValue(SchemeValuePtr first, SchemeValuePtr second): first(first), second(second) {
+	}
+	bool isPairList() override {
+		//return true;
+		if (second->isVoid()) {
+			return true;
+		}
+		return second->isPairList();
+	}
+	bool isPair() override {
+		return true;
+	}
+	shared_ptr<SchemeValue> first;
+	shared_ptr<SchemeValue> second;
 };
 class ListValue : public SchemeValue {
 
@@ -360,3 +428,8 @@ public:
 	vector<shared_ptr<SchemeValue>> value;
 };
 
+SchemeValuePtr cons(SchemeValuePtr first, SchemeValuePtr second);
+SchemeValuePtr append(SchemeValuePtr first, SchemeValuePtr second);
+SchemeValuePtr car(SchemeValuePtr exp) ;
+SchemeValuePtr cdr(SchemeValuePtr exp) ;
+SchemeValuePtr makeList(vector<SchemeValuePtr> exp);
