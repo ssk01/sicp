@@ -44,8 +44,8 @@ void testParser(string& input) {
 void testEval(string& input, EnvPtr init) {
 	Parser a{ input };
 	auto b = a.parser();
-	/*cout << *(b) << endl;
-	cout << "parser success" << endl;*/
+	cout << *(b) << endl;
+	cout << "parser success" << endl;
 	cout << ">...........................................<" << endl;
 	cout << input << "\tresult ";
 	cout << *eval(b, init) << endl;
@@ -61,6 +61,10 @@ void testEval(vector<string>& programs) {
 	}
 	cout << "________________________________ test end________________________________" << endl;
 
+}
+void testEval(initializer_list<string> input) {
+	vector<string> programs{ input };
+	testEval(programs);
 }
 
  //todo support for - int;
@@ -114,6 +118,17 @@ void letTest() {
 	
 	testEval(vector<string>{ let, let1 });
 
+}
+void beginTest() {
+	string beg1 = R"(
+	(if 1 (begin (+3 3) 4)  5)
+)";
+	string fun = R"(
+	(define (f a) (+ a 4) 44 )
+)";
+	//testEval({ fun, "(f 3)" });
+	//testEval({ "(define(f a) (let((x 3))(+3 4)  (+x 4)) (+ x 77))", "(f 3)" });
+	testEval({ beg1 });
 }
 void condTest() {
 
@@ -173,8 +188,18 @@ void runloop() {
 
 	//(*n(fact(-n 1)))))
 	//((> test 2) 3)
+	
+	
 	//letTest();
-	consTest();
+	//consTest();
+
+	beginTest();
+
+
+
+
+
+
 	//testEval(vector<string>{ funFact, funFactCall });
 	//testEval(vector<string>{ plus });
 	//testEval(vector<string>{ define, if_ });
@@ -200,7 +225,11 @@ void runloop() {
 
 int main() {
 	runloop();
-
+	//initializer_list<string> a{ "adsf", "fds","dfs" };
+	//vector<string> a1{ a };
+	//for (auto aa : a1) {
+	//	cout << aa;
+	//}
 	cout << "hello world" << endl;
 
 }

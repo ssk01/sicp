@@ -40,3 +40,10 @@ SchemeValuePtr append(SchemeValuePtr first, SchemeValuePtr second) {
 	}
 	return cons(car(first), append(cdr(first), second));
 }
+shared_ptr<SchemeValue> vectorToList(vector<shared_ptr<SchemeValue>> &lists) {
+	auto list = make_shared<ListValue>();
+	for (auto v : lists) {
+		list->addValue(v);
+	}
+	return list;
+}

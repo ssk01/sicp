@@ -24,6 +24,7 @@ class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
 vector<string> listToString(vector<shared_ptr<SchemeValue>> &lists);
+shared_ptr<SchemeValue> vectorToList(vector<shared_ptr<SchemeValue>> &lists);
 class Env;
 using EnvPtr = shared_ptr<Env>;
 
@@ -153,8 +154,8 @@ public:
 		return cdr(1);
 	}
 	
-	virtual shared_ptr<SchemeValue> letBody() {
-		return car(2);
+	virtual vector<SchemeValuePtr> letBody() {
+		return cdr(2);
 	}
 	virtual shared_ptr<SchemeValue> letArgVar() {
 		return car(0);
@@ -164,6 +165,9 @@ public:
 	}
 	virtual vector<shared_ptr<SchemeValue>> letArgs() {
 		return car(1)->cdr(0);
+	}
+	virtual SchemeValuePtr  beginBody() {
+		return vectorToList(cdr(1));
 	}
 	virtual shared_ptr<SchemeValue> causeCond() {
 		return car(0);
@@ -273,7 +277,7 @@ public:
 		out << " LambdaValue: ";
 	}
 
-	LambdaValue(vector<string>& args, shared_ptr<SchemeValue> body, EnvPtr env) : args(args), value(body), parent(env) {}
+	LambdaValue(vector<string>& args, vector<shared_ptr<SchemeValue>> body, EnvPtr env) : args(args), value(vectorToList(body)), parent(env) {}
 	bool isLambda() override {
 		return true;
 	}
@@ -402,7 +406,7 @@ public:
 		return {};
 	}
 	shared_ptr<SchemeValue> var() override {
-		assert(value.size() == 3);
+		assert(value.size() >= 3);
 		if (car(1)->isVariable()) {
 			return car(1);
 		}
@@ -412,12 +416,12 @@ public:
 		fck("type error");
 	}
 	shared_ptr<SchemeValue> val(EnvPtr env) override {
-		assert(value.size() == 3);
+		assert(value.size() >= 3);
 		if (car(1)->isVariable()) {
 			return car(2);
 		}
 		else if (car(1)->isPair()) {
-			return make_shared<LambdaValue>(listToString(car(1)->cdr(1)), car(2), env);
+			return make_shared<LambdaValue>(listToString(car(1)->cdr(1)), cdr(2), env);
 
 		}
 	}

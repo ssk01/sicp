@@ -62,7 +62,7 @@ shared_ptr<SchemeValue> apply(shared_ptr<SchemeValue> procedure, vector<shared_p
 		}
 		else if (procedure->isLambda()) {
 			auto env = procedure->newEnv(arguments);
-			return eval(procedure->body(), env);
+			return evalSeq(procedure->body(), env);
 		}
 	}
 	fck("apply fuck");
@@ -74,6 +74,19 @@ vector<shared_ptr<SchemeValue>>  listOfValue(vector<shared_ptr<SchemeValue>> arg
 		result.emplace_back(eval(arg, env));
 	}
 	return result;
+}
+
+shared_ptr<SchemeValue> evalSeq(shared_ptr<SchemeValue> exp, EnvPtr env) {
+	if (exp->isPair()) {
+		auto result = Void();
+		for (auto v : exp->cdr(0)) {
+			result = eval(v, env);
+		}
+		return result;
+	}
+	else {
+		fck(exp->toString() + "type should be pair ");
+	}
 }
 shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	//return {};
@@ -95,6 +108,9 @@ shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
 	}
 	else if (exp->isLambda()) {
 		return exp;
+	}
+	else if (exp->isTagged("begin")) {
+		return evalSeq(exp->beginBody(), env);
 	}
 	else if (exp->isIf()) {
 		auto predict = eval(exp->predict(), env);
