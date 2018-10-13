@@ -133,21 +133,3 @@ public:
 
 	string input;
 };
-//pair<Type, string> peek(const string& input) {
-//	auto i = 0;
-//	while (input.size()> i && isspace(input[i])) {
-//		i++;
-//	}
-//	if (i == input.size()) {
-//		cout << "error " << input << endl;
-//		exit(1);
-//	}
-//	auto j = i;
-//	while (input.size()> i && isspace(input[i])) {
-//		i++;
-//	}
-//	string result = input.substr(j, i - j);
-//	if (isdigit[0]) {
-//		return 
-//	}
-//}

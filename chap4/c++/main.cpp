@@ -12,20 +12,6 @@
 #include <algorithm>
 using namespace std;
 
-// 1
-// "dfasf"
-// (+ 1 2)
-//(define c 3)
-//(f 23 32)
-
-
-
-//bool selfEvaluting(string& input) {
-//	if (isdigit(input[0]) || input[0] == '"') {
-//		return true;
-//	}
-//	return false;
-//}
 
 //
 //(cond((self - evaluating ? exp) exp)
@@ -216,12 +202,5 @@ int main() {
 	runloop();
 
 	cout << "hello world" << endl;
-	int a = 3;
-	//map<int, shared_ptr<int>> a;
-	//auto b =make_shared<int>(3);
-	//cout << *a[1] << endl;
-	//{
-	//	//auto b = a[1];
-	//	//aa(a[1]);
-	//}
+
 }
