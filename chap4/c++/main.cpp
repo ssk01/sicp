@@ -53,7 +53,7 @@ void testEval(string& input, EnvPtr init) {
 
 
 }
-void testEval(vector<string>& programs) {
+void testEval(const vector<string>& programs) {
 	cout << "________________________________ test begin________________________________" << endl;
 	auto init = initEnv();
 	for (auto p : programs) {
@@ -156,6 +156,19 @@ void condTest() {
 )";
 	testEval(vector<string>{ cond, cond_1, cond_2, cond_3, cond_4 });
 }
+void factTest() {
+	string funFact = R"(
+(define (fact n)
+		(if (< n 1)
+			1
+			(* n (fact(- n 1)))))
+	)";
+	string funFactCall = R"((fact 10 ))";
+	testEval({ funFact, funFactCall });
+	/*vector<string> input(100, funFactCall);
+	input.insert(input.begin(), funFact);
+	testEval(input);*/
+}
 void runloop() {
 	auto init = initEnv();
 	string input = R"("a b c")";
@@ -178,13 +191,7 @@ void runloop() {
 	//testEval(plus, init);
 	/*testEval(func, init);
 	testEval(funcCall, init);*/
-	string funFact = R"(
-(define (fact n)
-		(if (< n 1)
-			1
-			(* n (fact(- n 1)))))
-	)";
-	string funFactCall = R"((fact 5))";
+
 
 	//(*n(fact(-n 1)))))
 	//((> test 2) 3)
@@ -192,8 +199,8 @@ void runloop() {
 	
 	//letTest();
 	//consTest();
-
-	beginTest();
+	factTest();
+	//beginTest();
 
 
 
@@ -231,5 +238,6 @@ int main() {
 	//	cout << aa;
 	//}
 	cout << "hello world" << endl;
-
+	int a;
+	//cin >> a;
 }

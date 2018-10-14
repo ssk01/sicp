@@ -23,8 +23,8 @@ shared_ptr<SchemeValue> expandClauses(vector<shared_ptr<SchemeValue>> exp);
 class VoidValue;
 class SchemeValue;
 shared_ptr<SchemeValue> Void();
-vector<string> listToString(vector<shared_ptr<SchemeValue>> &lists);
-shared_ptr<SchemeValue> vectorToList(vector<shared_ptr<SchemeValue>> &lists);
+vector<string> listToString(const vector<shared_ptr<SchemeValue>> &lists);
+shared_ptr<SchemeValue> vectorToList(const vector<shared_ptr<SchemeValue>> &lists);
 class Env;
 using EnvPtr = shared_ptr<Env>;
 
@@ -277,7 +277,7 @@ public:
 		out << " LambdaValue: ";
 	}
 
-	LambdaValue(vector<string>& args, vector<shared_ptr<SchemeValue>> body, EnvPtr env) : args(args), value(vectorToList(body)), parent(env) {}
+	LambdaValue(const vector<string>& args, vector<shared_ptr<SchemeValue>> body, EnvPtr env) : args(args), value(vectorToList(body)), parent(env) {}
 	bool isLambda() override {
 		return true;
 	}

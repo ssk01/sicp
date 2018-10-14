@@ -11,7 +11,7 @@ ostream& operator<<(ostream& out, const SchemeValue& a) {
 	a.print(out);
 	return out;
 }
-vector<string> listToString( vector<shared_ptr<SchemeValue>> &lists) {
+vector<string> listToString(const vector<shared_ptr<SchemeValue>> &lists) {
 	vector<string> result;
 	for (auto &v : lists) {
 		result.emplace_back(v->toString());
@@ -40,7 +40,7 @@ SchemeValuePtr append(SchemeValuePtr first, SchemeValuePtr second) {
 	}
 	return cons(car(first), append(cdr(first), second));
 }
-shared_ptr<SchemeValue> vectorToList(vector<shared_ptr<SchemeValue>> &lists) {
+shared_ptr<SchemeValue> vectorToList(const vector<shared_ptr<SchemeValue>> &lists) {
 	auto list = make_shared<ListValue>();
 	for (auto v : lists) {
 		list->addValue(v);

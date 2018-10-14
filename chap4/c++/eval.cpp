@@ -88,7 +88,7 @@ shared_ptr<SchemeValue> evalSeq(shared_ptr<SchemeValue> exp, EnvPtr env) {
 		fck(exp->toString() + "type should be pair ");
 	}
 }
-shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue>& exp, EnvPtr env) {
+shared_ptr<SchemeValue>  eval(shared_ptr<SchemeValue> exp, EnvPtr env) {
 	//return {};
 	if (exp->selfEvaluting()) {
 		//cout << *exp << endl;
