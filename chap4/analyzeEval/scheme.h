@@ -48,6 +48,10 @@ public:
 	virtual void setEnv(EnvPtr env)  {
 		fck("type error");
 	}
+	virtual analyzeFun bodyFun()  {
+		fck("type error");
+		return {};
+	};
 	virtual void bodyFun(analyzeFun call)  {
 		fck("type error");
 	}
@@ -310,6 +314,10 @@ public:
 	vector<string> args;
 	shared_ptr<SchemeValue> value;
 	analyzeFun bodyFun_;
+	analyzeFun bodyFun() override {
+		//bodyFun_ = call;
+		return bodyFun_;
+	};
 	void bodyFun(analyzeFun call) override {
 		 bodyFun_ = call;
 	};
