@@ -8,7 +8,7 @@
 #include "env.h"
 #include "parser.h"
 #include "eval.h"
-#include "analyzeEval.h"
+#include "../analyzeEval/analyzeEval.h"
 #include <numeric>
 #include <algorithm>
 using namespace std;
@@ -189,6 +189,8 @@ void runloop() {
 	string func = R"((define (f a) (+ a 11)))";
 	string funcCall = R"((f 1))";
 	//testEval(define, init);
+	//testEval({ "(list 1 2 ) " });
+	testEval({ R"(    (list 1 2 3)      )" });
 	//testEval(plus, init);
 	/*testEval(func, init);
 	testEval(funcCall, init);*/
@@ -200,7 +202,7 @@ void runloop() {
 	
 	//letTest();
 	//consTest();
-	factTest();
+	//factTest();
 	//beginTest();
 
 
@@ -232,10 +234,12 @@ void runloop() {
 }
 
 int main() {
-	//runloop();
-	analyzeLoop();
+	runloop();
+	//analyzeLoop();
 
 	cout << "hello world" << endl;
 	int a;
 	//cin >> a;
 }
+
+// fuck todo (list 'a 'b  'c)

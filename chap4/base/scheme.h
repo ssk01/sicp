@@ -73,6 +73,7 @@ public:
 		fck("type error, should be pair");
 		return Void();
 	}
+	//ambChoices
 	virtual bool isProcedure() {
 		return false;
 	}
@@ -113,6 +114,10 @@ public:
 		fck("type error");
 		return Void();
 
+	}
+	virtual void addValue(shared_ptr<SchemeValue> v)  {
+		fck("type error shoule be list");
+		return ;
 	}
 	virtual shared_ptr<SchemeValue> val(EnvPtr env) {
 		fck("type error");
@@ -205,6 +210,11 @@ public:
 		return{};
 	}
 
+	virtual vector<SchemeValuePtr> ambChoices() {
+		//fck("type error, should be amb");
+		//return {};
+		return cdr(1);
+	}
 
 	virtual ~SchemeValue() {};
 //protected:
@@ -341,7 +351,27 @@ public:
 		return true;
 	}
 };
+class AmbValue : public SchemeValue {
+	AmbValue() {
 
+	}
+	//AmbValue() {
+	//	//sdf
+	//}
+	void print(ostream& out) const override {
+		out << "amb ";
+		out << "(";
+		auto end = value.size() - 1;
+		for (auto i = 0; i < value.size(); i++) {
+			value[i]->print(out);
+			if (end != i) {
+				out << ", ";
+			}
+		}
+		out << ")";
+	}
+	vector<SchemeValuePtr> value;
+};
 class PairValue : public SchemeValue {
 public:
 
@@ -494,7 +524,7 @@ public:
 		}
 		out << ")";
 	}
-	void addValue(shared_ptr<SchemeValue> v) {
+	void addValue(shared_ptr<SchemeValue> v) override{
 		value.push_back(v);
 	}
 	vector<shared_ptr<SchemeValue>> value;
