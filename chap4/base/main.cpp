@@ -7,8 +7,6 @@
 #include "scheme.h"
 #include "env.h"
 #include "parser.h"
-#include "test.h"
-#include "lazy.h"
 #include "eval.h"
 #include "analyzeEval.h"
 #include <numeric>
@@ -37,6 +35,38 @@ using namespace std;
 //(error "Unknown expression type -- EVAL" exp))))
 
 
+
+
+void testParser(string& input) {
+	Parser a{ input };
+
+	cout << *(a.parser()) << endl;
+}
+void testEval(string& input, EnvPtr init) {
+	Parser a{ input };
+	auto b = a.parser();
+	cout << *(b) << endl;
+	cout << "parser success" << endl;
+	cout << ">...........................................<" << endl;
+	cout << input << "\tresult ";
+	cout << *eval(b, init) << endl;
+	cout << ">...........................................<" << endl;
+
+
+}
+void testEval(const vector<string>& programs) {
+	cout << "________________________________ test begin________________________________" << endl;
+	auto init = initEnv();
+	for (auto p : programs) {
+		testEval(p, init);
+	}
+	cout << "________________________________ test end________________________________" << endl;
+
+}
+void testEval(initializer_list<string> input) {
+	vector<string> programs{ input };
+	testEval(programs);
+}
 
  //todo support for - int;
 void consTest() {
@@ -203,9 +233,9 @@ void runloop() {
 
 int main() {
 	//runloop();
-	//analyzeLoop();
-	testDelay();
+	analyzeLoop();
+
 	cout << "hello world" << endl;
 	int a;
-	//cin >> a; 
+	//cin >> a;
 }
