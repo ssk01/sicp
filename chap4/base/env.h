@@ -5,6 +5,9 @@
 #include <iostream>
 using std::shared_ptr;
 using std::map;
+class Env;
+using EnvPtr = shared_ptr<Env>;
+EnvPtr initEnv();
 class Env {
 public:
 	//enclosingEnvironment
@@ -46,6 +49,5 @@ public:
 		env[var] = val;
 	}
 };
-EnvPtr initEnv();
-using EnvPtr = shared_ptr<Env>;
-//ÊÇ·ñÒª¿´¼ûÊµÏÖ²ÅÄÜÊ¹ÓÃ shared_ptr
+
+//æ˜¯å¦è¦çœ‹è§å®ç°æ‰èƒ½ä½¿ç”¨ shared_ptr

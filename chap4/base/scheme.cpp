@@ -3,6 +3,15 @@
 #include <assert.h>
 
 using namespace std;
+
+EnvPtr LambdaValue::newEnv(vector<SchemeValuePtr> argsValue) {
+	auto env = make_shared<Env>(this->parent);
+	assert(args.size() == argsValue.size());
+	for (int i = 0; i < args.size(); i++) {
+		env->define(args[i], argsValue[i]);
+	}
+	return env;
+}
 shared_ptr<SchemeValue> Void() {
 	static shared_ptr<SchemeValue> void_ = make_shared<VoidValue>();
 	return void_;

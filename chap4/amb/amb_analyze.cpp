@@ -2,17 +2,26 @@
 #include "amb_analyze.h"
 #include "../base/env.h"
 #include "../base/scheme.h"
+#include "../base/parser.h"
 using namespace std;
 //using emptyFun = 
 using failFun = function < SchemeValuePtr()>;
 using succeedFun = function < SchemeValuePtr(SchemeValuePtr, failFun)>;
 using amb_analyzeFun = function<SchemeValuePtr(EnvPtr,succeedFun, failFun)>;
-amb_analyzeFun analyze(SchemeValuePtr exp);
+amb_analyzeFun analyze1(SchemeValuePtr exp);
+
+
+
+SchemeValuePtr amb_eval(SchemeValuePtr exp, EnvPtr e, succeedFun succeed, failFun fail) {
+	auto fun = analyze1(exp);
+	return fun( e, succeed, fail);
+}
+
 
 amb_analyzeFun amb_analyze(SchemeValuePtr exp) {
 	auto ambChoices = exp->ambChoices();
 	vector<amb_analyzeFun> choicesFun;
-	transform(ambChoices.begin(), ambChoices.end(), back_inserter(choicesFun), analyze);
+	transform(ambChoices.begin(), ambChoices.end(), back_inserter(choicesFun), analyze1);
 	return [=](EnvPtr e, succeedFun succeed, failFun fail) {
 		function<SchemeValuePtr(vector<amb_analyzeFun>)> try_next;
 		try_next = [fail, succeed, e, &try_next](vector<amb_analyzeFun> choices)-> SchemeValuePtr {
@@ -23,10 +32,10 @@ amb_analyzeFun amb_analyze(SchemeValuePtr exp) {
 			else {
 				auto fun = choices[0];
 				vector<amb_analyzeFun> restChoices{ choices.begin()++, choices.end() };
-				failFun fail = [&try_next, restChoices]() {
+				failFun fail1 = [&try_next, restChoices]() {
 					return try_next(restChoices);
 				};
-				return fun(e, succeed, fail);
+				return fun(e, succeed, fail1);
 			}
 			//return Void();
 		};
@@ -59,13 +68,22 @@ SchemeValuePtr	get_args(vector<amb_analyzeFun> argproc, EnvPtr env, succeedFun s
 	}
 }
 shared_ptr<SchemeValue> amb_analyzeApplyEval(shared_ptr<SchemeValue> procedure, vector<shared_ptr<SchemeValue>> arguments, succeedFun succeed, failFun fail) {
-
+	if (procedure->isProcedure()) {
+		if (procedure->isPrimitiveProcedure()) {
+			return succeed(procedure->call(arguments),fail);
+		}
+		/*else if (procedure->isLambda()) {
+			auto env = procedure->newEnv(arguments);
+			return procedure->bodyFun()(env);
+		}*/
+	}
+	fck("apply fuck");
 }
 amb_analyzeFun amb_analyzeApply(SchemeValuePtr exp) {
-	auto funproc = analyze(exp->operators());
+	auto funproc = analyze1(exp->operators());
 	vector<amb_analyzeFun>  argproc;
 	auto operands = exp->operands();
-	transform(operands.begin(), operands.end(), back_inserter(argproc), analyze);
+	transform(operands.begin(), operands.end(), back_inserter(argproc), analyze1);
 	return [=](EnvPtr env, succeedFun succeed, failFun fail) {
 		auto amb_analyzeApply_success = [=](SchemeValuePtr proc, failFun fail1) {
 			return get_args(argproc, env, [=](SchemeValuePtr oper, failFun fail2) {
@@ -75,15 +93,19 @@ amb_analyzeFun amb_analyzeApply(SchemeValuePtr exp) {
 		return funproc(env, amb_analyzeApply_success,fail);
 	};
 }
-amb_analyzeFun analyze(SchemeValuePtr exp) {
+amb_analyzeFun analyze1(SchemeValuePtr exp) {
 	if (exp->selfEvaluting()) {
 		return [=](EnvPtr e, succeedFun succeed, failFun fail) {
 			return succeed(exp, fail); 
 		};
 	}
-	//else if (exp->isVariable()) {
-	//	return [=](EnvPtr env) {return env->lookup(exp); };
-	//}
+	else if (exp->isVariable()) {
+		return [=](EnvPtr env, succeedFun succeed, failFun fail) {
+			return  succeed(env->lookup(exp), fail);
+			//return succeed(exp, fail);
+		};
+		//return [=](EnvPtr env) {return env->lookup(exp); };
+	}
 	//else if (exp->isTagged("set!")) {
 	//	return [=](EnvPtr env) { env->assign(exp->setVar(), exp->setVal()); return Void(); };
 	//}
@@ -143,4 +165,41 @@ amb_analyzeFun analyze(SchemeValuePtr exp) {
 	else if (exp->application()) {
 		return amb_analyzeApply(exp);
 	}
+}
+void dirver_loop();
+SchemeValuePtr internal_loop (failFun tryAgain) {
+	string input;
+	//getline(cin, input);
+	input = "( +  1 2 )";
+	cout << "input is: " << input << endl;
+	if (input == "try") {
+		return tryAgain();
+	}
+	else {
+		cout << " starting new problem" << endl;
+		auto initenv = initEnv();
+		Parser a{ input };
+		auto ast = a.parser();
+		cout << *ast << endl;
+		succeedFun succeed = [](SchemeValuePtr value, failFun fail) {
+			cout << "result :" << value << endl;
+			//return internal_loop(fail);
+			return Void();
+
+		};
+		amb_eval(ast, initenv,  succeed,[]() {
+			cout << "no more values" << endl;
+			dirver_loop();
+
+			return Void();
+			}
+		);
+		return Void();
+	}
+}
+void dirver_loop() {
+	internal_loop([]() {
+		cout << "no more problems" << endl;
+		return Void();
+	});
 }
